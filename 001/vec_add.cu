@@ -1,4 +1,6 @@
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <cuda_runtime.h>
 
 __global__ void vecAddKernel(float* A, float* B, float*C, int n) {
     int i = threadIdx.x + blockDim.x * blockIdx.x;
@@ -35,4 +37,40 @@ void vecAdd(float* A_h, float* B_h, float* C_h, int n) {
     cudaFree(A_d);
     cudaFree(B_d);
     cudaFree(C_d);
+}
+
+int main() {
+    int n = 1000;
+    size_t size = n * sizeof(float);
+
+    float *A_h = (float*)malloc(size);
+    float *B_h = (float*)malloc(size);
+    float *C_h = (float*)malloc(size);
+
+    for (int i = 0; i < n; i++) {
+        A_h[i] = i * 1.0f;
+        B_h[i] = i * 2.0f;
+    }
+
+    printf("A_h:\n");
+    for (int i = 0; i < 10; i++) {
+        printf("A_h[%d] = %f\n", i, A_h[i]);
+    }
+
+    printf("\nB_h:\n");
+    for (int i = 0; i < 10; i++) {
+        printf("B_h[%d] = %f\n", i, B_h[i]);
+    }
+
+    vecAdd(A_h, B_h, C_h, n);
+
+    for (int i = 0; i < 10; i++) {
+        printf("C[%d] = %f\n", i, C_h[i]);
+    }
+
+    free(A_h);
+    free(B_h);
+    free(C_h);
+
+    return 0;
 }
